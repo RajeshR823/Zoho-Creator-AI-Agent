@@ -1,6 +1,6 @@
-# Zoho Creator Terminal AI Agent (Stage 1)
+# Zoho Creator  AI Agent 
 
-Terminal-only AI agent that ingests Zoho Creator bulk exports into DuckDB and answers questions with LangChain.
+ AI agent that ingests Zoho Creator bulk exports into DuckDB and answers questions with LangChain.
 Zoho live sync now uses Creator API v2.1 metadata + report data endpoints.
 
 ## Guarantees
