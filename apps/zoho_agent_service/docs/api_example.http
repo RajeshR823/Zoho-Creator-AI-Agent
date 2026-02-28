@@ -1,0 +1,23 @@
+### Health
+GET http://127.0.0.1:8000/health
+
+### Status
+GET http://127.0.0.1:8000/status
+
+### Chat
+POST http://127.0.0.1:8000/chat
+Content-Type: application/json
+
+{
+  "question": "summarize the patient problem",
+  "session_id": "demo-user-1",
+  "max_rows": 20
+}
+
+### Clear session
+POST http://127.0.0.1:8000/session/clear
+Content-Type: application/json
+
+{
+  "session_id": "demo-user-1"
+}

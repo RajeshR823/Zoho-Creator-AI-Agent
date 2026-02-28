@@ -20,3 +20,4 @@ tests/test_e2e.py
 tests/test_prompt_exposure.py
 tests/test_schema_summary.py
 tests/test_sql_safety.py
+tests/test_zoho_discovery.py

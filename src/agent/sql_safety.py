@@ -37,7 +37,26 @@ def _has_multiple_statements(sql: str) -> bool:
 
 def _starts_with_select(sql: str) -> bool:
     cleaned = sql.strip().lstrip("(")
-    return cleaned.upper().startswith("SELECT")
+    upper = cleaned.upper()
+    return upper.startswith("SELECT") or upper.startswith("WITH")
+
+
+def _extract_cte_names(sql: str) -> set[str]:
+    names = set(re.findall(r"\bWITH\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+AS\b", sql, flags=re.IGNORECASE))
+    names.update(re.findall(r",\s*([a-zA-Z_][a-zA-Z0-9_]*)\s+AS\b", sql, flags=re.IGNORECASE))
+    return {n.lower() for n in names}
+
+
+def _extract_from_join_sources(sql: str) -> list[tuple[str, bool]]:
+    # Returns (source_token, is_function_like)
+    pattern = re.compile(
+        r"\b(?:FROM|JOIN)\s+([a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)?)\s*(\()?",
+        flags=re.IGNORECASE,
+    )
+    out: list[tuple[str, bool]] = []
+    for match in pattern.finditer(sql):
+        out.append((match.group(1), bool(match.group(2))))
+    return out
 
 
 def validate_select_only_sql(sql: str, allowed_tables: list[str] | None = None) -> ValidatedSQL:
@@ -57,14 +76,19 @@ def validate_select_only_sql(sql: str, allowed_tables: list[str] | None = None) 
             return ValidatedSQL(sql=sql, is_safe=False, reason=f"Blocked keyword detected: {keyword}")
 
     if allowed_tables:
-        # Light guard: if FROM/JOIN references unknown identifiers, reject.
-        referenced = re.findall(r"\b(?:FROM|JOIN)\s+([a-zA-Z_][a-zA-Z0-9_]*)", normalized, flags=re.IGNORECASE)
-        for table in referenced:
-            if table not in allowed_tables:
+        allowed_lower = {t.lower() for t in allowed_tables}
+        cte_names = _extract_cte_names(normalized)
+        for source, is_function in _extract_from_join_sources(normalized):
+            if is_function:
+                continue
+            source_base = source.split(".")[-1].lower()
+            if source_base in cte_names:
+                continue
+            if source.lower() not in allowed_lower and source_base not in allowed_lower:
                 return ValidatedSQL(
                     sql=sql,
                     is_safe=False,
-                    reason=f"Table '{table}' is not in allowed_tables",
+                    reason=f"Table '{source}' is not in allowed_tables",
                 )
 
     return ValidatedSQL(sql=normalized, is_safe=True, reason=None)

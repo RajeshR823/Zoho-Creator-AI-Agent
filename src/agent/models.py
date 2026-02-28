@@ -30,6 +30,7 @@ class SchemaSummary(BaseModel):
 class QueryRequest(BaseModel):
     question: str
     max_evidence_rows: int = 30
+    conversation_context: list[str] = Field(default_factory=list)
 
 
 class ValidatedSQL(BaseModel):
