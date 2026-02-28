@@ -1,0 +1,78 @@
+app_name: hospital-management-system
+reports:
+- name: All Medical Records
+  report_link_name: medical_records_Report
+  table_name: medical_records_report
+  description: ''
+  key_columns: []
+- name: Severities
+  report_link_name: medical_records_by_severity
+  table_name: medical_records_by_severity
+  description: ''
+  key_columns: []
+- name: All Appointments
+  report_link_name: appointments_Report
+  table_name: appointments_report
+  description: ''
+  key_columns: []
+- name: Statuses
+  report_link_name: appointments_by_status
+  table_name: appointments_by_status
+  description: ''
+  key_columns: []
+- name: All Bills
+  report_link_name: bills_Report
+  table_name: bills_report
+  description: ''
+  key_columns: []
+- name: Payment Modes
+  report_link_name: bills_by_payment_mode
+  table_name: bills_by_payment_mode
+  description: ''
+  key_columns: []
+- name: All Doctors
+  report_link_name: doctors_Report
+  table_name: doctors_report
+  description: ''
+  key_columns: []
+- name: All Prescriptions
+  report_link_name: prescriptions_Report
+  table_name: prescriptions_report
+  description: ''
+  key_columns: []
+- name: All Patients
+  report_link_name: patients_Report
+  table_name: patients_report
+  description: ''
+  key_columns: []
+- name: Blood Groups
+  report_link_name: patients_by_blood_group
+  table_name: patients_by_blood_group
+  description: ''
+  key_columns: []
+- name: All Lab Orders
+  report_link_name: lab_orders_Report
+  table_name: lab_orders_report
+  description: ''
+  key_columns: []
+allowed_tables:
+- appointments_by_status
+- appointments_report
+- bills_by_payment_mode
+- bills_report
+- doctors_report
+- lab_orders_report
+- medical_records_by_severity
+- medical_records_report
+- patients_by_blood_group
+- patients_report
+- prescriptions_report
+join_hints: []
+business_definitions: {}
+refresh:
+  default_stale_after_hours: 24
+query:
+  evidence_row_cap: 30
+schema_summary:
+  sample_values_cap: 10
+  profile_columns_cap: 50

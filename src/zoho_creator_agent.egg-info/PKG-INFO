@@ -1,0 +1,115 @@
+Metadata-Version: 2.4
+Name: zoho-creator-agent
+Version: 0.1.0
+Summary: Terminal AI agent for Zoho Creator with DuckDB + LangChain
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: duckdb>=1.1.0
+Requires-Dist: langchain>=0.3.0
+Requires-Dist: langchain-openai>=0.2.0
+Requires-Dist: pydantic>=2.8.0
+Requires-Dist: pydantic-settings>=2.4.0
+Requires-Dist: python-dotenv>=1.0.1
+Requires-Dist: PyYAML>=6.0.1
+Requires-Dist: requests>=2.32.0
+Requires-Dist: rich>=13.7.1
+Requires-Dist: typer>=0.12.3
+Provides-Extra: dev
+Requires-Dist: pytest>=8.3.2; extra == "dev"
+
+# Zoho Creator Terminal AI Agent (Stage 1)
+
+Terminal-only AI agent that ingests Zoho Creator bulk exports into DuckDB and answers questions with LangChain.
+
+## Guarantees
+
+- LLM never receives full dataset; only schema summary and capped query rows.
+- OpenRouter model is locked to `mistralai/mistral-7b-instruct`.
+- SQL execution is `SELECT`-only with explicit blocked operations.
+- No LangGraph in Stage 1.
+
+## Quickstart
+
+1. Create and activate a virtual environment:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -V
+```
+
+2. Install dependencies:
+
+```bash
+python -m pip install --upgrade pip
+pip install -e .[dev]
+```
+
+3. Configure environment:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env`:
+
+- Set `OPENROUTER_API_KEY=<your_key>`
+- Keep `OPENROUTER_MODEL=mistralai/mistral-7b-instruct` unchanged
+- Fill `ZOHO_*` values only when using direct Zoho sync
+
+4. Update `config/app.yaml` with your app/report/table details.
+   - This is a reusable mapping file, not a fixed schema.
+   - You can point the same agent to any Zoho Creator app by changing this file (or using another config path).
+
+5. Sync data (recommended first run: local ZIP):
+
+```bash
+agent sync --from-zip /absolute/path/to/export.zip
+```
+
+If your Zoho credentials are configured, you can sync directly:
+
+```bash
+agent sync
+```
+
+6. Check status:
+
+```bash
+agent status
+```
+
+7. Ask questions:
+
+```bash
+agent ask "Top 10 deals by amount this quarter"
+agent chat
+agent explain
+```
+
+8. Run tests:
+
+```bash
+pytest -q
+```
+
+## Commands
+
+- `agent sync`
+- `agent status`
+- `agent ask "..."`
+- `agent chat`
+- `agent explain`
+
+## Common issues
+
+- `command not found: agent`
+  - Run `pip install -e .[dev]` again in the active virtualenv.
+- `OPENROUTER_MODEL must be ...`
+  - Set `OPENROUTER_MODEL=mistralai/mistral-7b-instruct` in `.env`.
+- Zoho config missing errors
+  - Use ZIP mode first: `agent sync --from-zip /absolute/path/file.zip`.
+
+## Additional docs
+
+- [`docs/04-install-and-run.md`](docs/04-install-and-run.md)
